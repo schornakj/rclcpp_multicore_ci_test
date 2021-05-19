@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>rclcpp_multicore_ci_test</name>
+  <version>0.0.1</version>
+  <description>
+    Nodes to reproduce an issue with running integration tests in CI.
+  </description>
+  <license>BSD</license>
+  <maintainer email="joseph.schornak@picknik.ai">Joe Schornak</maintainer>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>example_interfaces</depend>
+  <depend>rclcpp</depend>
+  <depend>std_srvs</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
