@@ -13,10 +13,25 @@ TestFixtureNode::TestFixtureNode()
   , cb_group_me_(create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive))
   , fib_client_(rclcpp_action::create_client<Fibonacci>(this, "/fibonacci", cb_group_me_))
 {
+  auto on_one_shot_timer =
+    [this]() -> void {
+      one_shot_timer_->cancel();
+      RCLCPP_INFO(get_logger(), "Setting severity threshold to DEBUG");
+
+      auto ret = rcutils_logging_set_logger_level(
+        get_logger().get_name(), RCUTILS_LOG_SEVERITY_DEBUG);
+      if (ret != RCUTILS_RET_OK) {
+        RCLCPP_ERROR(get_logger(), "Error setting severity: %s", rcutils_get_error_string().str);
+        rcutils_reset_error();
+      }
+    };
+  one_shot_timer_ = create_wall_timer(std::chrono::seconds(0), on_one_shot_timer);
 }
 
 bool TestFixtureNode::testActionFeebackCount()
 { 
+  std::this_thread::sleep_for(std::chrono::seconds(3));
+
   if(!fib_client_->wait_for_action_server(std::chrono::seconds(3)))
   {
     RCLCPP_ERROR_STREAM(get_logger(), "Timed out waiting for action server to be available");
@@ -84,7 +99,7 @@ bool TestFixtureNode::testActionFeebackCount()
 
 }  // namespace rclcpp_multicore_ci_test
 
-TEST(TaskSequenceInterface, setup_plan_exec_through_ros)
+TEST(TestMulticoreCI, require_action_feedback)
 {
   auto node = std::make_shared<rclcpp_multicore_ci_test::TestFixtureNode>();
 
@@ -107,8 +122,6 @@ int main(int argc, char* argv[])
   rclcpp::init(argc, argv);
 
   testing::InitGoogleTest(&argc, argv);
-
-  rclcpp::NodeOptions options;
 
   bool all_successful = RUN_ALL_TESTS();
 

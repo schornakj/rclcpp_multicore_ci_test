@@ -19,5 +19,6 @@ public:
 private:
   rclcpp::CallbackGroup::SharedPtr cb_group_me_;
   rclcpp_action::Client<Fibonacci>::SharedPtr fib_client_;
+  rclcpp::TimerBase::SharedPtr one_shot_timer_;
 };
 }  // namespace rclcpp_multicore_ci_test

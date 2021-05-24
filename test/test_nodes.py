@@ -25,6 +25,7 @@ def main(argv=sys.argv[1:]):
         executable="fibonacci_action_server",
         name="fibonacci_action_server",
         output="screen",
+#        arguments=['--ros-args', '--log-level', 'debug']
     )
 
     ld = LaunchDescription([])
